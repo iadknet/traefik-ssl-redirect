@@ -1,0 +1,203 @@
+# traefik.toml
+################################################################
+# Global configuration
+################################################################
+
+# Traefik logs file
+# If not defined, logs to stdout
+#
+# Optional
+#
+# traefikLogsFile = "log/traefik.log"
+
+# Access logs file
+#
+# Optional
+#
+accessLogsFile = "/logs/access.log"
+
+# Log level
+#
+# Optional
+# Default: "ERROR"
+#
+logLevel = "DEBUG"
+
+# Backends throttle duration: minimum duration between 2 events from providers
+# before applying a new configuration. It avoids unnecessary reloads if multiples events
+# are sent in a short amount of time.
+#
+# Optional
+# Default: "2s"
+#
+# ProvidersThrottleDuration = "5s"
+
+# If non-zero, controls the maximum idle (keep-alive) to keep per-host.  If zero, DefaultMaxIdleConnsPerHost is used.
+# If you encounter 'too many open files' errors, you can either change this value, or change `ulimit` value.
+#
+# Optional
+# Default: http.DefaultMaxIdleConnsPerHost
+#
+# MaxIdleConnsPerHost = 200
+
+# Entrypoints to be used by frontends that do not specify any entrypoint.
+# Each frontend can specify its own entrypoints.
+#
+# Optional
+# Default: ["http"]
+#
+defaultEntryPoints = ["http"]
+
+
+# Entrypoints definition
+#
+# Optional
+# Default:
+# [entryPoints]
+#   [entryPoints.http]
+#   address = ":80"
+#
+# To redirect an http entrypoint to an https entrypoint (with SNI support):
+# [entryPoints]
+#   [entryPoints.http]
+#   address = ":80"
+#     [entryPoints.http.redirect]
+#       entryPoint = "https"
+#   [entryPoints.https]
+#   address = ":443"
+#     [entryPoints.https.tls]
+#       [[entryPoints.https.tls.certificates]]
+#       CertFile = "integration/fixtures/https/snitest.com.cert"
+#       KeyFile = "integration/fixtures/https/snitest.com.key"
+#       [[entryPoints.https.tls.certificates]]
+#       CertFile = "integration/fixtures/https/snitest.org.cert"
+#       KeyFile = "integration/fixtures/https/snitest.org.key"
+#
+# To redirect an entrypoint rewriting the URL:
+# [entryPoints]
+#   [entryPoints.http]
+#   address = ":80"
+#     [entryPoints.http.redirect]
+#       regex = "^http://localhost/(.*)"
+#       replacement = "http://mydomain/$1"
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+     [entryPoints.http.redirect]
+       regex = "^http://(.*)"
+       replacement = "https://$1"
+
+   [web]
+    address = ":8080"
+
+
+  # # # Enable Docker configuration backend
+  # # #
+  # # # Optional
+  # # #
+  # [docker]
+
+  # Docker server endpoint. Can be a tcp or a unix socket endpoint.
+  #
+  # Required
+  #
+  # endpoint = "unix:///var/run/docker.sock"
+
+  # Enable watch docker changes
+  #
+  # Optional
+  #
+  # watch = true
+
+
+
+#
+# ################################################################
+# # Consul KV configuration backend
+# ################################################################
+#
+# # Enable Consul KV configuration backend
+# #
+# # Optional
+# #
+# [consul]
+#
+# # Consul server endpoint
+# #
+# # Required
+# #
+# endpoint = "consul:8500"
+#
+# # Enable watch Consul changes
+# #
+# # Optional
+# #
+# watch = true
+#
+# # Prefix used for KV store.
+# #
+# # Optional
+# #
+# prefix = "traefik"
+#
+##############################################################
+## Consul Catalog configuration backend
+##############################################################
+
+# Enable Consul Catalog configuration backend
+#
+# Optional
+#
+[consulCatalog]
+
+# Consul server endpoint
+#
+# Required
+#
+endpoint = "consul:8500"
+
+# Default domain used.
+#
+# Optional
+# #
+# domain = "dev.evisions"
+
+# Prefix for Consul catalog tags
+#
+# Optional
+#
+prefix = "traefik"
+
+# # Constraint on Consul catalog tags
+# #
+# # Optional
+# #
+# constraints = ["tag==api", "tag==he*ld"]
+# # Matching with containers having this tag: "traefik.tags=api,helloworld"
+
+
+# [file]
+# # watch = true
+#
+#  [backends]
+#    [backends.gateway]
+#     [backends.gateway.servers.gateway1]
+#       url = "http://gateway:8888"
+#
+# #
+# #
+# # [frontends]
+# #   [frontends.iacuc_web]
+# #     entrypoints = ["http"]
+# #     backend = "backend-iacuc-web-80"
+# #     passHostHeader = true
+# #     [frontends.iacuc_web.routes.iacuc_1]
+# #       rule = "PathPrefixStrip:/iacuc_web"
+# #
+#   [frontends.service_gateway]
+#     entrypoints = ["http"]
+#     passHostHeader = true
+#     backend = "gateway"
+#     [frontends.service_gateway.routes.gateway_1]
+#       rule = "PathPrefixStrip:/api"

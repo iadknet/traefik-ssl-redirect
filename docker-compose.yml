@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+  consul:
+    image: consul:v0.6.4
+    command: agent -dev -client=0.0.0.0
+    ports:
+      - "8500:8500"
+
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - "443:443"
+      - "80:80"
+
+  traefik:
+    image: traefik
+    volumes:
+      - ./logs:/logs
+      - ./traefik/traefik.toml:/traefik.toml
+
+  app:
+    build: node-consul-client
