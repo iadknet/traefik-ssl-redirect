@@ -17,6 +17,8 @@ services:
 
   traefik:
     image: traefik
+    ports:
+      - "8080:8080"
     volumes:
       - ./logs:/logs
       - ./traefik/traefik.toml:/traefik.toml
